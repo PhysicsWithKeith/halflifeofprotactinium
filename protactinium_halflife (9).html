@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protactinium-234 Half-Life Experiment - Physics With Keith</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1a1f3a;
+            --accent-cyan: #00d9ff;
+            --accent-magenta: #ff0080;
+            --accent-yellow: #ffd500;
+            --accent-green: #00ff88;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --uranium-yellow: #f4e04d;
+            --organic-yellow: #d4a017;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+        
+        body {
+            font-family: 'Space Mono', monospace;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 217, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 128, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 380px 360px;
+            grid-template-rows: 80px 1fr;
+            gap: 15px;
+            padding: 15px;
+        }
+        
+        .header {
+            grid-column: 1 / -1;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 217, 255, 0.1);
+        }
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .status {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .experiment-area {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experiment-area::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 217, 255, 0.03) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .bottle-container {
+            position: relative;
+            width: 200px;
+            height: 400px;
+            z-index: 1;
+        }
+        
+        .bottle {
+            width: 100%;
+            height: 100%;
+            border: 3px solid var(--accent-cyan);
+            border-radius: 20px 20px 30px 30px;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 0 20px rgba(0, 217, 255, 0.3),
+                inset 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+        
+        .bottle-cap {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 20px;
+            background: linear-gradient(135deg, #666, #999);
+            border-radius: 10px 10px 0 0;
+            border: 2px solid #444;
+        }
+        
+        .layer {
+            position: absolute;
+            width: 100%;
+            transition: all 0.5s ease-out;
+        }
+        
+        .aqueous-layer {
+            bottom: 0;
+            height: 80%;
+            background: linear-gradient(180deg, 
+                rgba(244, 224, 77, 0.7) 0%, 
+                rgba(244, 224, 77, 0.9) 100%);
+            border-bottom: 3px solid rgba(244, 224, 77, 1);
+        }
+        
+        .organic-layer {
+            bottom: 80%;
+            height: 20%;
+            background: linear-gradient(180deg, 
+                rgba(212, 160, 23, 0.6) 0%, 
+                rgba(212, 160, 23, 0.9) 100%);
+            border-bottom: 2px solid rgba(212, 160, 23, 1);
+        }
+        
+        .mixed-layer {
+            bottom: 0;
+            height: 100%;
+            background: linear-gradient(180deg,
+                rgba(244, 224, 77, 0.7),
+                rgba(212, 160, 23, 0.8),
+                rgba(244, 224, 77, 0.7),
+                rgba(212, 160, 23, 0.8));
+            background-size: 100% 400%;
+            animation: mix 0.3s ease-in-out infinite;
+            display: none;
+        }
+        
+        @keyframes mix {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 0% 100%; }
+        }
+        
+        .geiger-tube {
+            position: absolute;
+            right: -140px;
+            top: 00px;
+            width: 120px;
+            height: 80px;
+            background: linear-gradient(135deg, #2d3748, #4a5568);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+            transition: all 0.5s ease;
+            //transform: rotate(90deg);
+        }
+        
+        .geiger-tube::before {
+            content: 'GM TUBE';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            color: var(--accent-cyan);
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .geiger-window {
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 80px;
+            background: rgba(0, 217, 255, 0.3);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 5px;
+        }
+        
+        .radiation-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent-magenta);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-magenta);
+            animation: particle-emit 1.5s ease-out forwards;
+        }
+        
+        @keyframes particle-emit {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty));
+            }
+        }
+        
+        .controls {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .control-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .control-section h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        
+        button {
+            font-family: 'Space Mono', monospace;
+            padding: 12px 20px;
+            border: 2px solid var(--accent-cyan);
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0, 217, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        button:hover {
+            background: rgba(0, 217, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: var(--text-secondary);
+        }
+        
+        button:disabled:hover {
+            background: rgba(0, 217, 255, 0.1);
+            box-shadow: none;
+            transform: none;
+        }
+        
+        button span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-primary {
+            border-color: var(--accent-magenta);
+            background: rgba(255, 0, 128, 0.1);
+        }
+        
+        .btn-primary:hover {
+            background: rgba(255, 0, 128, 0.2);
+            box-shadow: 0 0 20px rgba(255, 0, 128, 0.4);
+        }
+        
+        .btn-warning {
+            border-color: var(--accent-yellow);
+            background: rgba(255, 213, 0, 0.1);
+            color: var(--accent-yellow);
+        }
+        
+        .btn-warning:hover {
+            background: rgba(255, 213, 0, 0.2);
+            box-shadow: 0 0 20px rgba(255, 213, 0, 0.4);
+        }
+        
+        .display-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .display-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+        
+        .display-label {
+            color: var(--text-secondary);
+        }
+        
+        .display-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            color: var(--accent-green);
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+        
+        .data-table {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .data-table h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .table-scroll {
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-cyan) rgba(0, 0, 0, 0.2);
+        }
+        
+        .table-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .table-scroll::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: var(--accent-cyan);
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        
+        th {
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--accent-cyan);
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        tr:hover {
+            background: rgba(0, 217, 255, 0.05);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 50px rgba(0, 217, 255, 0.5);
+        }
+        
+        .modal-content h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            color: var(--accent-cyan);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        
+        .modal-content h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            color: var(--accent-magenta);
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .modal-content p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+        
+        .modal-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+        
+        .modal-content li {
+            margin-bottom: 8px;
+        }
+        
+        .close-modal {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--accent-magenta);
+            line-height: 1;
+            margin-top: -10px;
+        }
+        
+        .close-modal:hover {
+            color: var(--accent-cyan);
+        }
+        
+        .equation {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-left: 3px solid var(--accent-yellow);
+            margin: 15px 0;
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-yellow);
+            border-radius: 4px;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            10% { transform: translateX(-10px) rotate(-5deg); }
+            20% { transform: translateX(10px) rotate(5deg); }
+            30% { transform: translateX(-10px) rotate(-5deg); }
+            40% { transform: translateX(10px) rotate(5deg); }
+            50% { transform: translateX(-10px) rotate(-5deg); }
+            60% { transform: translateX(10px) rotate(5deg); }
+            70% { transform: translateX(-10px) rotate(-5deg); }
+            80% { transform: translateX(10px) rotate(5deg); }
+            90% { transform: translateX(-5px) rotate(-2deg); }
+        }
+        
+        .shaking {
+            animation: shake 1.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Protactinium-234 Half-Life</h1>
+            <h2>Physics With Keith</h2>
+            <div class="status">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>Experiment Ready</span>
+                </div>
+                <div class="status-item">
+                    <span id="experiment-state">Awaiting Shake</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="experiment-area">
+            <div class="bottle-container" id="bottleContainer">
+                <div class="bottle" id="bottle">
+                    <div class="bottle-cap"></div>
+                    <div class="layer aqueous-layer" id="aqueousLayer"></div>
+                    <div class="layer organic-layer" id="organicLayer"></div>
+                    <div class="mixed-layer" id="mixedLayer"></div>
+                    <div id="radiationParticles"></div>
+                </div>
+                <div class="geiger-tube" id="geigerTube">
+                    <div class="geiger-window"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-section">
+                <h3>🧪 Experiment Controls</h3>
+                <button id="shakeBtn" class="btn-primary"><span>Shake Bottle</span></button>
+                <button id="startTimerBtn" disabled><span>Start Timer</span></button>
+                <button id="bgRadiationBtn" class="btn-warning"><span>Measure Background</span></button>
+            </div>
+            
+            <div class="control-section">
+                <h3>📊 Display</h3>
+                <div class="display-panel">
+                    <div class="display-row">
+                        <span class="display-label">Time (s):</span>
+                        <span class="display-value" id="timeDisplay">0</span>
+                    </div>
+                    <div class="display-row">
+                        <span class="display-label">Total Counts:</span>
+                        <span class="display-value" id="countsDisplay">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h3>⚙️ Options</h3>
+                <button id="copyDataBtn"><span>📋 Copy Data to Clipboard</span></button>
+                <button id="resetBtn"><span>Start Again</span></button>
+                <button id="theoryBtn"><span>Show Theory</span></button>
+            </div>
+        </div>
+        
+        <div class="data-table">
+            <h2>📈 Data Collection</h2>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time (s)</th>
+                            <th>Counts</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="theoryModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h2>Theory: Protactinium-234 Half-Life Experiment</h2>
+            
+            <h3>The Decay Chain</h3>
+            <p>This experiment uses the uranium-238 decay chain:</p>
+            <div class="equation">
+                U-238 → Th-234 → Pa-234 → U-234
+            </div>
+            <ul>
+                <li><strong>Uranium-238</strong>: Extremely long half-life (4.5 billion years), provides constant supply</li>
+                <li><strong>Thorium-234</strong>: Half-life of 24.1 days, stays in aqueous layer, emits weak beta particles</li>
+                <li><strong>Protactinium-234</strong>: Half-life of ~70 seconds, dissolves in organic layer, emits energetic beta particles (2.32 MeV)</li>
+            </ul>
+            
+            <h3>Chemical Separation</h3>
+            <p>The bottle contains two layers:</p>
+            <ul>
+                <li><strong>Aqueous layer (bottom, yellow)</strong>: Uranyl nitrate solution with U-238 and Th-234</li>
+                <li><strong>Organic layer (top, darker yellow)</strong>: Iso-butyl methyl ketone or amyl acetate</li>
+            </ul>
+            <p>When shaken, uranium and protactinium form chloride complexes that dissolve in the organic layer (~95% extraction), while thorium remains in the aqueous layer.</p>
+            
+            <h3>Detection</h3>
+            <p>The Geiger-Müller tube is positioned near the top of the bottle to detect:</p>
+            <ul>
+                <li>High-energy beta particles from Pa-234 decay (primarily)</li>
+                <li>Some background radiation</li>
+                <li>NOT the alpha particles from U-238 (low energy, absorbed)</li>
+                <li>NOT the weak beta particles from Th-234 (mostly absorbed by position)</li>
+            </ul>
+            
+            <h3>Exponential Decay</h3>
+            <p>After separation, Pa-234 in the organic layer decays exponentially:</p>
+            <div class="equation">
+                Activity A(t) = A₀ × e^(-λt)<br>
+                where λ = ln(2)/T₁/₂ = 0.0099 s⁻¹<br>
+                Initial activity A₀ ≈ 50 Bq after shaking
+            </div>
+            <p>The count rate decreases with the same exponential pattern, allowing determination of the half-life. The higher initial activity (~50 Bq) provides better counting statistics and reduces relative uncertainty in measurements.</p>
+            
+            <h3>Experimental Procedure</h3>
+            <ol>
+                <li>Shake the bottle vigorously for 15 seconds</li>
+                <li>Wait for layers to separate (a few seconds)</li>
+                <li>Start the timer and begin counting</li>
+                <li>Record total counts every 10 seconds</li>
+                <li>Continue for at least 3 minutes (180 seconds)</li>
+                <li>Measure background radiation separately</li>
+                <li>Correct counts for background</li>
+                <li>Calculate count rate = (counts in interval) / (time interval)</li>
+                <li>Plot ln(count rate) vs time to get straight line</li>
+                <li>Determine half-life from the graph</li>
+            </ol>
+            
+            <h3>Data Analysis</h3>
+            <p>Students should:</p>
+            <ul>
+                <li>Record the total counts shown every 10 seconds</li>
+                <li><strong>Note: The experimental counts include both Pa-234 decay AND background radiation (~0.5 Bq or ~5 counts per 10 seconds)</strong></li>
+                <li>Subtract background counts (from background measurement)</li>
+                <li>Calculate count rate for each 10-second interval</li>
+                <li>Plot count rate vs time to see exponential decay</li>
+                <li>Plot ln(count rate) vs time to get straight line with slope = -λ</li>
+                <li>Calculate half-life: T₁/₂ = ln(2)/λ ≈ 70 seconds</li>
+            </ul>
+            
+            <h3>Sources of Uncertainty</h3>
+            <ul>
+                <li>Statistical variation (Poisson distribution) in radioactive decay</li>
+                <li>Incomplete extraction of Pa-234 into organic layer</li>
+                <li>Some detection of Th-234 beta particles from aqueous layer</li>
+                <li>Background radiation fluctuations</li>
+                <li>Timing precision when starting/stopping measurements</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Physical constants
+        const HALF_LIFE = 70; // seconds
+        const DECAY_CONSTANT = Math.log(2) / HALF_LIFE; // s^-1
+        const BACKGROUND_RATE = 0.2; // Bq (counts per second) - realistic lab background
+        const INITIAL_ACTIVITY = 10; // Bq after shaking - increased for better statistics
+        
+        // State variables
+        let experimentRunning = false;
+        let timerRunning = false;
+        let backgroundMode = false;
+        let startTime = 0;
+        let currentTime = 0;
+        let totalCounts = 0;  // This will be exact floating point, rounded only for display
+        let displayedCounts = 0;  // Last displayed count value - never decreases!
+        let lastRecordTime = 0;
+        let timerInterval = null;
+        let particleInterval = null;
+        let separated = false;
+        let lastCountTime = 0;  // Track last time we added counts;
+        
+        // DOM elements
+        const bottle = document.getElementById('bottle');
+        const bottleContainer = document.getElementById('bottleContainer');
+        const aqueousLayer = document.getElementById('aqueousLayer');
+        const organicLayer = document.getElementById('organicLayer');
+        const mixedLayer = document.getElementById('mixedLayer');
+        const geigerTube = document.getElementById('geigerTube');
+        const radiationParticles = document.getElementById('radiationParticles');
+        const shakeBtn = document.getElementById('shakeBtn');
+        const startTimerBtn = document.getElementById('startTimerBtn');
+        const bgRadiationBtn = document.getElementById('bgRadiationBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const theoryBtn = document.getElementById('theoryBtn');
+        const copyDataBtn = document.getElementById('copyDataBtn');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const countsDisplay = document.getElementById('countsDisplay');
+        const dataTableBody = document.getElementById('dataTableBody');
+        const experimentState = document.getElementById('experiment-state');
+        const theoryModal = document.getElementById('theoryModal');
+        const closeModal = document.getElementById('closeModal');
+        
+        // Calculate activity at time t
+        function getActivity(t) {
+            if (backgroundMode) {
+                return BACKGROUND_RATE;
+            }
+            return INITIAL_ACTIVITY * Math.exp(-DECAY_CONSTANT * t) + BACKGROUND_RATE;
+        }
+        
+        // Generate exact expected counts for interval [t1, t2] with realistic random variation
+        // Returns floating point value - NO ROUNDING until final display
+        function generateExactCounts(t1, t2) {
+            const deltaT = t2 - t1;
+            
+            if (backgroundMode) {
+                // Background: constant rate
+                const exactCounts = BACKGROUND_RATE * deltaT;
+                // Add Poisson-like variation (stddev = sqrt(N))
+                const stddev = Math.sqrt(Math.max(exactCounts, 0.1));
+                const variation = stddev * (Math.random() - 0.5) * 2; // Normal-ish distribution
+                return exactCounts + variation;
+            }
+            
+            // Calculate exact integral of A(t) = A0 * e^(-λt) + background from t1 to t2
+            // Integral of A0*e^(-λt) dt = -A0/λ * e^(-λt)
+            const exactDecayCounts = (INITIAL_ACTIVITY / DECAY_CONSTANT) * 
+                (Math.exp(-DECAY_CONSTANT * t1) - Math.exp(-DECAY_CONSTANT * t2));
+            const exactBackgroundCounts = BACKGROUND_RATE * deltaT;
+            const exactTotal = exactDecayCounts + exactBackgroundCounts;
+            
+            // Add realistic Poisson counting statistics: stddev = sqrt(N)
+            // For radioactive decay, this is the natural statistical variation
+            const stddev = Math.sqrt(Math.max(exactTotal, 0.1));
+            // Increased scatter by 2.5x for more realistic appearance
+            const variation = stddev * (Math.random() - 0.5) * 2 * 1.75;
+            
+            return exactTotal + variation;
+        }
+        
+        // Create radiation particle animation
+        function emitParticle() {
+            if (!timerRunning && !backgroundMode) return;
+            
+            const particle = document.createElement('div');
+            particle.className = 'radiation-particle';
+            
+            // Start from organic layer top
+            const startX = 100 + Math.random() * 80 - 40;
+            const startY = 20 + Math.random() * 40;
+            
+            particle.style.left = startX + 'px';
+            particle.style.top = startY + 'px';
+            
+            // Random trajectory toward geiger tube
+            const tx = 80 + Math.random() * 20;
+            const ty = -20 + Math.random() * 40;
+            
+            particle.style.setProperty('--tx', tx + 'px');
+            particle.style.setProperty('--ty', ty + 'px');
+            
+            radiationParticles.appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 1500);
+        }
+        
+        // Shake animation
+        function shakeBottle() {
+            if (experimentRunning) return;
+            
+            experimentState.textContent = 'Shaking...';
+            shakeBtn.disabled = true;
+            
+            // Hide layers, show mixed
+            aqueousLayer.style.display = 'none';
+            organicLayer.style.display = 'none';
+            mixedLayer.style.display = 'block';
+            
+            // Shake animation
+            bottle.classList.add('shaking');
+            
+            setTimeout(() => {
+                bottle.classList.remove('shaking');
+                experimentState.textContent = 'Separating Layers...';
+                
+                // Separation animation
+                mixedLayer.style.display = 'none';
+                aqueousLayer.style.display = 'block';
+                organicLayer.style.display = 'block';
+                
+                setTimeout(() => {
+                    separated = true;
+                    experimentState.textContent = 'Ready to Start';
+                    startTimerBtn.disabled = false;
+                    shakeBtn.disabled = false;
+                }, 2000);
+                
+            }, 1500);
+        }
+        
+        // Start timer and counting
+        function startTimer() {
+            if (!separated && !backgroundMode) return;
+            
+            timerRunning = true;
+            experimentRunning = true;
+            startTime = Date.now();
+            lastRecordTime = 0;
+            totalCounts = 0.0;  // Exact floating point
+            displayedCounts = 0;  // Reset displayed counts
+            lastCountTime = 0.0;
+            currentTime = 0;
+            
+            startTimerBtn.disabled = true;
+            shakeBtn.disabled = true;
+            bgRadiationBtn.disabled = true;
+            experimentState.textContent = backgroundMode ? 'Measuring Background...' : 'Recording Data...';
+            
+            // Update timer display and accumulate counts with exact floating point math
+            timerInterval = setInterval(() => {
+                currentTime = (Date.now() - startTime) / 1000;
+                timeDisplay.textContent = currentTime.toFixed(1);
+                
+                // Accumulate exact counts since last update (NO ROUNDING)
+                if (currentTime > lastCountTime) {
+                    const exactCounts = generateExactCounts(lastCountTime, currentTime);
+                    totalCounts += exactCounts;  // Accumulate as floating point
+                    lastCountTime = currentTime;
+                    
+                    // Display rounded value - but NEVER let it decrease!
+                    const roundedCounts = Math.round(totalCounts);
+                    if (roundedCounts > displayedCounts) {
+                        displayedCounts = roundedCounts;
+                        countsDisplay.textContent = displayedCounts;
+                    }
+                    // If roundedCounts <= displayedCounts, keep showing the old value
+                    
+                    // Emit particles based on current activity
+                    const activity = getActivity(currentTime);
+                    const particleProb = Math.min(activity / 50, 1);
+                    if (Math.random() < particleProb * 0.3) {
+                        emitParticle();
+                    }
+                }
+                
+                // Record data every 10 seconds
+                if (Math.floor(currentTime / 10) > Math.floor(lastRecordTime / 10)) {
+                    recordData();
+                    lastRecordTime = currentTime;
+                }
+                
+                // Stop after 3 minutes in normal mode
+                if (!backgroundMode && currentTime >= 180) {
+                    stopTimer();
+                }
+                
+                // Stop after 1 minute in background mode
+                if (backgroundMode && currentTime >= 60) {
+                    stopTimer();
+                }
+            }, 50);  // Update every 50ms
+            
+            // Continuous particle emission
+            particleInterval = setInterval(() => {
+                if (timerRunning && Math.random() < 0.4) {
+                    emitParticle();
+                }
+            }, 150);
+        }
+        
+        // Record data point
+        function recordData() {
+            const row = document.createElement('tr');
+            const timeCell = document.createElement('td');
+            const countsCell = document.createElement('td');
+            
+            const recordTime = Math.floor(currentTime / 10) * 10;
+            timeCell.textContent = recordTime;
+            countsCell.textContent = displayedCounts;  // Use displayed value (never decreases)
+            
+            row.appendChild(timeCell);
+            row.appendChild(countsCell);
+            dataTableBody.appendChild(row);
+            
+            // Scroll to bottom
+            const tableScroll = document.querySelector('.table-scroll');
+            tableScroll.scrollTop = tableScroll.scrollHeight;
+        }
+        
+        // Stop timer
+        function stopTimer() {
+            timerRunning = false;
+            clearInterval(timerInterval);
+            clearInterval(particleInterval);
+            
+            if (backgroundMode) {
+                experimentState.textContent = 'Background Measured';
+                backgroundMode = false;
+                experimentRunning = false;  // Reset so "Start Experiment" can work
+                
+                // Change button to "Start Experiment"
+                bgRadiationBtn.querySelector('span').textContent = 'Start Experiment';
+                bgRadiationBtn.className = 'btn-primary';
+                bgRadiationBtn.disabled = false;
+                
+                // Don't auto-reset, let user see the background data
+                // and manually start the experiment
+            } else {
+                experimentState.textContent = 'Experiment Complete';
+                shakeBtn.disabled = false;
+                bgRadiationBtn.disabled = false;
+            }
+        }
+        
+        // Measure background radiation
+        function measureBackground() {
+            if (experimentRunning) return;
+            
+            // Check if this is actually "Start Experiment" mode
+            if (bgRadiationBtn.querySelector('span').textContent === 'Start Experiment') {
+                startExperimentAfterBackground();
+                return;
+            }
+            
+            backgroundMode = true;
+            experimentState.textContent = 'Moving Source Away...';
+            bgRadiationBtn.disabled = true;
+            shakeBtn.disabled = true;
+            
+            // Move geiger tube and bottle
+            geigerTube.style.right = '400px';
+            bottleContainer.style.transform = 'translateX(-800px)';
+            bottleContainer.style.opacity = '0';
+            
+            setTimeout(() => {
+                experimentState.textContent = 'Measuring Background...';
+                startTime = Date.now();
+                currentTime = 0;
+                totalCounts = 0;
+                lastRecordTime = 0;
+                timerRunning = true;
+                
+                // Clear table and add header
+                dataTableBody.innerHTML = '';
+                const headerRow = document.createElement('tr');
+                const headerCell = document.createElement('td');
+                headerCell.colSpan = 2;
+                headerCell.style.textAlign = 'center';
+                headerCell.style.color = 'var(--accent-yellow)';
+                headerCell.textContent = '--- BACKGROUND RADIATION ---';
+                headerRow.appendChild(headerCell);
+                dataTableBody.appendChild(headerRow);
+                
+                startTimer();
+            }, 2000);
+        }
+        
+        // Start actual experiment after background measurement
+        function startExperimentAfterBackground() {
+            experimentState.textContent = 'Returning Source...';
+            
+            // Move bottle and GM tube back
+            geigerTube.style.right = '-140px';
+            geigerTube.style.top = '30px';
+            bottleContainer.style.transform = 'translateX(0)';
+            bottleContainer.style.opacity = '1';
+            
+            setTimeout(() => {
+                // Clear background data
+                dataTableBody.innerHTML = '';
+                
+                // Reset button to "Measure Background"
+                bgRadiationBtn.querySelector('span').textContent = 'Measure Background';
+                bgRadiationBtn.className = 'btn-warning';
+                bgRadiationBtn.disabled = false;
+                
+                // Enable shake button
+                shakeBtn.disabled = false;
+                
+                experimentState.textContent = 'Ready - Shake to Begin';
+            }, 1000);
+        }
+        
+        // Reset experiment
+        function resetExperiment() {
+            experimentRunning = false;
+            timerRunning = false;
+            backgroundMode = false;
+            separated = false;
+            currentTime = 0;
+            totalCounts = 0;
+            displayedCounts = 0;
+            lastRecordTime = 0;
+            lastCountTime = 0;
+            
+            clearInterval(timerInterval);
+            clearInterval(particleInterval);
+            
+            timeDisplay.textContent = '0';
+            countsDisplay.textContent = '0';
+            dataTableBody.innerHTML = '';
+            
+            startTimerBtn.disabled = true;
+            shakeBtn.disabled = false;
+            bgRadiationBtn.disabled = false;
+            
+            // Reset button text in case it was in "Start Experiment" mode
+            bgRadiationBtn.querySelector('span').textContent = 'Measure Background';
+            bgRadiationBtn.className = 'btn-warning';
+            
+            experimentState.textContent = 'Awaiting Shake';
+            
+            // Reset positions
+            //geigerTube.style.right = '-140px';
+            //geigerTube.style.top = '30px';
+            bottleContainer.style.transform = 'translateX(0)';
+            bottleContainer.style.opacity = '1';
+            
+            // Clear particles
+            radiationParticles.innerHTML = '';
+        }
+        
+        
+        // Copy data to clipboard
+        function copyDataToClipboard() {
+            const rows = dataTableBody.querySelectorAll('tr');
+            if (rows.length === 0) {
+                alert('No data to copy! Run the experiment first.');
+                return;
+            }
+            
+            // Build tab-separated text
+            let text = 'Time (s)\tCounts\n';
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                // Skip header rows (like "--- BACKGROUND RADIATION ---")
+                if (cells.length === 2) {
+                    text += cells[0].textContent + '\t' + cells[1].textContent + '\n';
+                }
+            });
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(text).then(() => {
+                // Show feedback
+                const originalText = copyDataBtn.querySelector('span').textContent;
+                copyDataBtn.querySelector('span').textContent = '✓ Copied!';
+                copyDataBtn.style.borderColor = 'var(--accent-green)';
+                
+                setTimeout(() => {
+                    copyDataBtn.querySelector('span').textContent = originalText;
+                    copyDataBtn.style.borderColor = 'var(--accent-cyan)';
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy data. Please try again.');
+                console.error('Copy failed:', err);
+            });
+        }
+        
+        // Event listeners
+        shakeBtn.addEventListener('click', shakeBottle);
+        startTimerBtn.addEventListener('click', startTimer);
+        bgRadiationBtn.addEventListener('click', measureBackground);
+        resetBtn.addEventListener('click', resetExperiment);
+        copyDataBtn.addEventListener('click', copyDataToClipboard);
+        
+        theoryBtn.addEventListener('click', () => {
+            theoryModal.classList.add('active');
+        });
+        
+        closeModal.addEventListener('click', () => {
+            theoryModal.classList.remove('active');
+        });
+        
+        theoryModal.addEventListener('click', (e) => {
+            if (e.target === theoryModal) {
+                theoryModal.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
